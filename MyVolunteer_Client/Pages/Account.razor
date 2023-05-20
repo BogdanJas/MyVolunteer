@@ -1,0 +1,141 @@
+﻿@page "/account/{id:int}"
+@page "/account"
+@inject IVolunteerService _volunteerService
+@inject IFileUpload _fileUpload
+@inject IJSRuntime _jsRuntime
+
+@if (IsProcessing)
+    {
+    <div style="position:fixed;top:50%;left:50%;margin-top:-50px;margin-left:-100px;">
+        <img src="images/ajax-loader.gif" />
+    </div>
+    }
+else{
+<div class="mt-4 mx-4 px-md-5 mx-md-5 p-1">
+
+    <div class="row p-2 my-3">
+
+        <div class="col-12 col-lg-5 p-4 ml-4 ml-md-0 mt-4 mt-md-0 border">
+                @if (IsProcessing)
+                {
+                    <div class="text-center">
+                        <img src="/images/loading.gif">
+                    </div>
+                }
+                else
+                {
+            <EditForm Model="Volunteer" OnValidSubmit="UpsertVolunteer">
+                <DataAnnotationsValidator/>
+                <div class="row px-2 text-success border-bottom"><div class="col-7 py-1"><p style="font-size:x-large;margin:0px;">Volunteer Details</p></div></div>
+
+                <div class="form-group pt-2">
+                    <label>Name</label>
+                    <InputText @bind-Value="Volunteer.Name" class="fw-bolder"></InputText>>
+                    <ValidationMessage For="() => Volunteer.Name"></ValidationMessage>
+                </div>
+                <div class="form-group pt-2">
+                    <label class="fw-bolder">Phone</label>
+                    <InputText @bind-Value="Volunteer.PhoneNumber"></InputText>
+                    <ValidationMessage For="() => Volunteer.PhoneNumber"></ValidationMessage>
+                </div>
+                <div class="form-group pt-2">
+                    <label class="fw-bolder">Email</label>
+                    <InputText @bind-Value="Volunteer.Email"></InputText>
+                    <ValidationMessage For="() => Volunteer.Email"></ValidationMessage>
+                </div>
+                <div class="form-group pt-2">
+                    <label class="fw-bolder">Street Address</label>
+                    <InputText @bind-Value="Volunteer.StreetAddress"></InputText>
+                    <ValidationMessage For="() => Volunteer.StreetAddress"></ValidationMessage>
+                </div>
+                <div class="form-group pt-2">
+                    <label class="fw-bolder">City</label>
+                    <InputText @bind-Value="Volunteer.City"></InputText>
+                    <ValidationMessage For="() => Volunteer.City"></ValidationMessage>
+                </div>
+                <div class="form-group pt-2">
+                    <label class="fw-bolder">State</label>
+                    <InputText @bind-Value="Volunteer.State"></InputText>
+                    <ValidationMessage For="() => Volunteer.State"></ValidationMessage>
+                </div>
+                <div class="form-group pt-2">
+                    <label class="fw-bolder">Postal Code</label>
+                    <InputText @bind-Value="Volunteer.PostalCode"></InputText>
+                    <ValidationMessage For="() => Volunteer.PostalCode"></ValidationMessage>
+                </div>
+                <div class="form-group pt-2">
+                    <label class="fw-bolder">Password</label>
+                    <InputText @bind-Value="Volunteer.Password"></InputText>
+                    <ValidationMessage For="() => Volunteer.Password"></ValidationMessage>
+                </div>
+                <div class="form-group pt-2">
+                    <label class="fw-bolder">Confirm password</label>
+                    <InputText @bind-Value="Volunteer.ConfirmPassword"></InputText>
+                    <ValidationMessage For="() => Volunteer.ConfirmPassword"></ValidationMessage>
+                </div>
+        
+                <div class="form-group pt-4 col-6">
+                   <label class="fw-bolder">Insert resume</label>
+                   <InputFile OnChange="HandleResumeUpload"></InputFile>
+                </div>
+
+                <div class="form-group pt-2">
+                    <button type="submit" class="btn btn-success form-control">Save changes</button>
+                </div>
+            </EditForm>
+            }   
+        </div>
+    </div>
+</div>
+}
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private bool IsProcessing { get; set; } = false;
+    private VolunteerDTO Volunteer { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        IsProcessing = true;
+        Volunteer = await _volunteerService.Get(Id);
+        IsProcessing = false;
+    }
+
+    private async Task UpsertVolunteer()
+    {
+        if(Id != null || Id != 0)
+        {
+            Volunteer = await _volunteerService.Update(Volunteer);
+        }
+    }
+
+    private async Task HandleResumeUpload(InputFileChangeEventArgs e)
+    {
+        IsProcessing = true;
+        try
+        {
+            if (e.GetMultipleFiles().Count > 0)
+            {
+                foreach (var file in e.GetMultipleFiles())
+                {
+                    System.IO.FileInfo fileInfo = new System.IO.FileInfo(file.Name);
+                    if (fileInfo.Extension.ToLower() == ".pdf")
+                    {
+                        //Volunteer.ImageUrl = await _fileUpload.UploadFile(file);
+                    }
+                    else
+                    {
+                        await _jsRuntime.ToastrError("Please select .pdf file only");
+                        return;
+                    }
+                }
+            }
+            IsProcessing = false;
+        }
+        catch (Exception ex)
+        {
+            await _jsRuntime.ToastrError(ex.Message);
+        }
+    }
+}

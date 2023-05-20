@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="10.1.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MyVolunteer_Common\MyVolunteer_Common.csproj" />
+    <ProjectReference Include="..\MyVolunteer_DataAccess\MyVolunteer_DataAccess.csproj" />
+    <ProjectReference Include="..\MyVolunteer_Models\MyVolunteer_Models.csproj" />
+  </ItemGroup>
+
+</Project>

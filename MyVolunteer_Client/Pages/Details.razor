@@ -1,0 +1,105 @@
+﻿@page "/details/{ProjectId:int}"
+@inject IProjectService _projectService
+@using MyVolunteer_Client.ViewModels
+
+@if (IsProcessing)
+{
+    <div style="position:fixed;top:50%;left:50%;margin-top:-50px;margin-left:-100px;">
+        <img src="images/ajax-loader.gif" />
+    </div>
+} 
+else{
+    <EditForm OnValidSubmit="ProjectSignUp" Model="DetailsVM" method="post">
+        <div class="card container mt-4">
+            <div class="card-header ml-0  row">
+                <div class="col-12 col-md-6">
+                    <h1 class="text-primary">@Project.Name</h1>
+                </div>
+
+                <div class="col-12 col-md-6 text-end pt-4">
+                    <span class="badge bg-info pt-2" style="height:30px;">@Project.Category.Name</span>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="container rounded p-2">
+                    <div class="row">
+                        <div class="col-10">
+                            <p>@((MarkupString)@Project.Description)</p>
+                            <div class="row">
+                                @foreach (var projectDate in Project.ProjectDates.Where(p => p.VolunteersLimit > 0))
+                                {
+                                    if (projectDate.Id == DetailsVM.SelectedProjectDateId)
+                                    {
+                                        //this product is selected by user
+                                        <div class="col-2 bg-light text-center pt-2 m-2" style="border:3px solid #28A745; border-radius:10px;box-shadow:5px">
+                                            <p>@projectDate.Salary.ToString("c")</p>
+                                            <p>@projectDate.ProjectStartDate.ToString("d") - @projectDate.ProjectEndDate.ToString("d")</p>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        //all other products
+                                        <div class="col-2 bg-light text-center pt-2 m-2" style="border:1px solid; border-radius:10px;box-shadow:5px"
+                                        @onclick="(args)=>SelectedprojectDate(args,projectDate.Id)">
+                                            <p>@projectDate.Salary.ToString("c")</p>
+                                            <p>@projectDate.ProjectStartDate.ToString("d") - @projectDate.ProjectEndDate.ToString("d")</p>
+                                        </div>
+                                    }
+                                }
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <img src="@Project.ImageUrl" width="100%" class="rounded" />
+                        </div>
+
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <div class="row">
+                        <div class="col-12 col-md-4 pb-1">
+                            <a class="btn btn-success form-control " href="/">Back to Home</a>
+                        </div>
+                        <div class="col-12 col-md-4 pb-1">
+                            @if(DetailsVM.SelectedProjectDateId > 0)
+                            {
+                                <button type="submit" value="Sign Up" class="btn btn-primary form-control">Sign up</button>
+                            }
+                            else{
+                                <button type="submit" value="Sign Up" disabled class="btn btn-primary form-control">Sign up</button>
+                            }
+                        </div>
+                        <div class="col-12 col-md-4 pb-1">
+                            <a class="btn btn-success form-control " href="/">Contact for more details</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </EditForm>
+}
+@code {
+    [Parameter]
+    public int ProjectId{ get; set; }
+
+    public bool IsProcessing { get; set; } = false;
+    public ProjectDTO Project { get; set; } = new();
+    public DetailsVM DetailsVM { get; set; } = new();
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        IsProcessing = true;
+        Project = await _projectService.Get(ProjectId);
+        IsProcessing = false;
+    }
+    private async Task SelectedprojectDate(MouseEventArgs e, int projectDateId)
+    {
+        DetailsVM.ProjectDate = Project.ProjectDates.FirstOrDefault(u => u.Id == projectDateId);
+        DetailsVM.SelectedProjectDateId = projectDateId;
+    }
+
+    private async Task ProjectSignUp()
+    {
+        
+    }
+}

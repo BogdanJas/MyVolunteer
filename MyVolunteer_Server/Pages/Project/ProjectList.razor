@@ -1,0 +1,139 @@
+﻿@page "/project"
+@inject IProjectRepository _projectRepository
+@inject IJSRuntime _jsRuntime
+@inject IFileUpload _fileUpload
+@inject NavigationManager _navigationManager
+
+<_DeleteConfirmation IsParentComponentProcessing="IsLoading" ConfirmationChanged="ConfirmDelete_Click"></_DeleteConfirmation>
+<div class="row mt-4">
+    <div class="col-6">
+        <h4 class="card-title text-primary">Project List</h4>
+    </div>
+    <div class="col-4 offset-2">
+        <a href="project/create" class="btn btn-primary form-control">Add New project </a>
+    </div>
+    <div class="col-12 p-3">
+        @if (projects.Any())
+        {
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Shop Favorites</th>
+                        <th>Customer Favorites</th>
+                        <th>Category</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var proj in projects)
+                    {
+                        <tr>
+                            <td>
+                                @proj.Name
+                            </td>
+                            <th>
+                                <input type="checkbox" disabled checked="@proj.OrganisationFavourite">
+                            </th>
+                            <th>
+                                <input type="checkbox" disabled checked="@proj.VolunteerFavourite">
+                            </th>
+                            <th>
+                                @proj.Category.Name
+                            </th>
+                            <td>
+                                <NavLink href="@($"project/edit/{proj.Id}")" class="btn-primary btn">Edit</NavLink>
+                                <NavLink href="@($"project/date/{proj.Id}")" class="btn-success btn">Date</NavLink>
+                                <button class="btn btn-danger" @onclick="()=>HandleDelete(proj.Id)">Delete</button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            if (IsLoading)
+            {
+                //loading gif
+                <div class="text-center">
+                    <img src="/images/loading.gif">
+                </div>
+            }
+            else
+            {
+                //no records
+                <p>No records found.</p>
+            }
+        }
+    </div>
+</div>
+
+@code {
+    private IEnumerable<ProjectDTO> projects { get; set; } = new List<ProjectDTO>();
+    public bool IsLoading { get; set; }
+    private int DeleteprojectId { get; set; } = 0;
+
+    [CascadingParameter]
+    public Task<AuthenticationState> AuthenticationState { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationState;
+        if (!authState.User.Identity.IsAuthenticated)
+        {
+            var uri = new Uri(_navigationManager.Uri);
+            _navigationManager.NavigateTo($"/identity/account/login?returnUrl={uri.LocalPath}", forceLoad: true);
+        }
+        else
+        {
+            if (!authState.User.IsInRole(SD.Role_Admin) && !authState.User.IsInRole(SD.Role_Organisation))
+            {
+                _navigationManager.NavigateTo("/ErrorPage");
+            }
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await Loadprojects();
+        }
+    }
+
+    private async Task Loadprojects()
+    {
+        IsLoading = true;
+        StateHasChanged();
+        projects = await _projectRepository.GetAll();
+        IsLoading = false;
+        StateHasChanged();
+    }
+
+    private void HandleDelete(int id)
+    {
+        DeleteprojectId = id;
+        _jsRuntime.InvokeVoidAsync("ShowDeleteConfirmationModal");
+    }
+
+    public async Task ConfirmDelete_Click(bool isConfirmed)
+    {
+        IsLoading = true;
+        if (isConfirmed && DeleteprojectId != 0)
+        {
+            //delete
+            ProjectDTO project = await _projectRepository.Get(DeleteprojectId);
+            if (!project.ImageUrl.Contains("default.png"))
+            {
+                _fileUpload.DeleteFile(project.ImageUrl);
+
+            }
+            await _projectRepository.Delete(DeleteprojectId);
+            await _jsRuntime.ToastrSuccess("Project Deleted successfully");
+            await Loadprojects();
+            await _jsRuntime.InvokeVoidAsync("HideDeleteConfirmationModal");
+        }
+        IsLoading = false;
+    }
+}

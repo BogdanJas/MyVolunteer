@@ -1,0 +1,73 @@
+﻿@page "/signedlist"
+@inject IProjectSignUpRepository _projectSignUpRepository
+@inject NavigationManager _navigationManager
+
+<div>
+    <h4 class="card-title text-info">SignUp's List</h4>
+    @if (ProjectSignUpHeaders.Any())
+    {
+        <SfGrid @ref="ProjectSignUpHeaderGrid" DataSource="@ProjectSignUpHeaders" AllowPaging="true" AllowFiltering="true" AllowSorting="true">
+            <GridFilterSettings Type="Syncfusion.Blazor.Grids.FilterType.Menu"></GridFilterSettings>
+            <GridSortSettings AllowUnsort="false">
+                <GridSortColumns>
+                    <GridSortColumn Field="Salary" Direction="SortDirection.Ascending"></GridSortColumn>
+                </GridSortColumns>
+            </GridSortSettings>
+            <GridPageSettings PageSize="5" PageCount="5" PageSizes="true"></GridPageSettings>
+            <GridColumns>
+                <GridColumn IsPrimaryKey="true" AllowAdding="false" Field=@nameof(ProjectDateDTO.Id) HeaderText="ID" Visible="false"></GridColumn>
+                <GridColumn Field=@nameof(ProjectSignUpHeaderDTO.Volunteer.Name) HeaderText="Name" Format="t"></GridColumn>
+                <GridColumn Field=@nameof(ProjectSignUpHeaderDTO.Volunteer.Email) HeaderText="Email" Format="t"></GridColumn>
+                <GridColumn Field=@nameof(ProjectSignUpHeaderDTO.Volunteer.PhoneNumber) HeaderText="Phone number" Format="t"></GridColumn>
+                <GridColumn Field=@nameof(ProjectSignUpHeaderDTO.SignDate) HeaderText="Sign Date" Format="d" Type="ColumnType.Date" TextAlign="TextAlign.Right" Width="130"></GridColumn>
+                <GridColumn HeaderText="Manage Records" Width="150">
+                    
+                </GridColumn>
+            </GridColumns>
+        </SfGrid>
+    }
+     else
+        {
+            if (IsLoading)
+            {
+                //loading gif
+                <div class="text-center">
+                <img src="/images/loading.gif">
+                    </div>
+            }
+        }
+</div>
+
+
+@code {
+
+    public SfGrid<ProjectSignUpHeaderDTO> ProjectSignUpHeaderGrid;
+    private IEnumerable<ProjectSignUpHeaderDTO> ProjectSignUpHeaders { get; set; } = new List<ProjectSignUpHeaderDTO>();
+    private bool IsLoading { get; set; } = false;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+
+            await LoadSignUps();
+
+        }
+    }
+
+
+    private async Task LoadSignUps()
+    {
+        IsLoading = true;
+        StateHasChanged();
+        var projectSignUps = await _projectSignUpRepository.GetAll();
+        ProjectSignUpHeaders = projectSignUps.Select(u => u.ProjectSignUpHeader);
+        IsLoading = false;
+        StateHasChanged();
+    }
+
+     private void OrderDetails(int id)
+    {
+        _navigationManager.NavigateTo("/signUp/details/" + id);
+    }
+}

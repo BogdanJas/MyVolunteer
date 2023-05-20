@@ -1,0 +1,125 @@
+﻿@page "/project/date/{Id:int}"
+@inject IProjectRepository _projectRepository
+@inject IProjectDateRepository _projectDateRepository
+@inject IJSRuntime _jsRuntime
+@attribute [Authorize]
+<h3 class="card-title text-primary mb-3 ml-3">Project Date Managment</h3>
+ @if (IsLoading)
+{
+             <div class="text-center">
+                <img src="/images/loading.gif">
+    </div>
+}
+else
+{
+    <div class="row border p-2 mb-4">
+        <div class="col-11">
+            <div class="card-body">
+                <h4>@Project.Name</h4>
+                <span>Category : @Project.Category.Name</span> <br/>
+                    Description : <span>@((MarkupString)Project.Description)</span>
+            </div>
+        </div>
+        <div class="col-1">
+            <img src="@Project.ImageUrl" class="w-100">
+        </div>
+    </div>
+
+    <SfGrid @ref="projectDateGrid" DataSource="@ProjectDates" AllowPaging="true" AllowFiltering="true" AllowSorting="true"
+        Toolbar="@(new List<string> { "Add", "Edit", "Update", "Delete", "Cancel" })">
+        <GridEditSettings AllowAdding="true" AllowEditing="true" ShowDeleteConfirmDialog="true" AllowDeleting="true"></GridEditSettings>
+        <GridEvents OnActionBegin="ActionHandler" TValue="ProjectDateDTO"></GridEvents>
+        <GridFilterSettings Type="Syncfusion.Blazor.Grids.FilterType.Menu"></GridFilterSettings>
+        <GridSortSettings AllowUnsort="false">
+            <GridSortColumns>
+                <GridSortColumn Field="Salary" Direction="SortDirection.Ascending"></GridSortColumn>
+            </GridSortColumns>
+        </GridSortSettings>
+        <GridPageSettings PageSize="5" PageCount="5" PageSizes="true"></GridPageSettings>
+        <GridColumns>
+            <GridColumn IsPrimaryKey="true" AllowAdding="false" Field=@nameof(ProjectDateDTO.Id) HeaderText="ID" Visible="false"></GridColumn>
+            <GridColumn Field=@nameof(ProjectDateDTO.Salary) HeaderText="Salary" Format="C2"></GridColumn>
+            <GridColumn Field="@nameof(ProjectDateDTO.VolunteersLimit)" HeaderText="Limit" Format="N0"></GridColumn>
+            <GridColumn Field=@nameof(ProjectDateDTO.ProjectStartDate) HeaderText="Start Date" Format="d" Type="ColumnType.Date" TextAlign="TextAlign.Right" Width="130"></GridColumn>
+            <GridColumn Field=@nameof(ProjectDateDTO.ProjectEndDate) HeaderText="End Date" Format="d" Type="ColumnType.Date" TextAlign="TextAlign.Right" Width="130"></GridColumn>
+            <GridColumn HeaderText="Manage Records" Width="150">
+                <GridCommandColumns>
+                    <GridCommandColumn Type="CommandButtonType.Edit" ButtonOption="@(new CommandButtonOptions() { IconCss = "e-icons e-edit", CssClass = "e-flat" })"></GridCommandColumn>
+                    <GridCommandColumn Type="CommandButtonType.Delete" ButtonOption="@(new CommandButtonOptions() { IconCss = "e-icons e-delete", CssClass = "e-flat" })"></GridCommandColumn>
+                    <GridCommandColumn Type="CommandButtonType.Save" ButtonOption="@(new CommandButtonOptions() { IconCss = "e-icons e-update", CssClass = "e-flat" })"></GridCommandColumn>
+                    <GridCommandColumn Type="CommandButtonType.Cancel" ButtonOption="@(new CommandButtonOptions() { IconCss = "e-icons e-cancel-icon", CssClass = "e-flat" })"></GridCommandColumn>
+                </GridCommandColumns>
+            </GridColumn>
+        </GridColumns>
+    </SfGrid>
+}
+
+
+
+@code {
+    [Parameter]
+    public int Id { get; set; } 
+    private ProjectDTO Project { get; set; } = new();
+    private IEnumerable<ProjectDateDTO> ProjectDates { get; set; } = new List<ProjectDateDTO>();
+    private bool IsLoading { get; set; } = true;
+    public SfGrid<ProjectDateDTO> projectDateGrid;
+
+
+    IEnumerable<String> SizeList = new List<String>()
+    {
+        "Small","Medium","Large","8oz","16oz","24oz"
+    };
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            IsLoading=true;
+            StateHasChanged();
+            Project = await _projectRepository.Get(Id);
+            ProjectDates = await _projectDateRepository.GetAll(Id);
+            IsLoading=false;
+            StateHasChanged();
+        }   
+    }
+
+    public async void ActionHandler(ActionEventArgs<ProjectDateDTO> args)
+    {
+        if(args.RequestType.Equals(Syncfusion.Blazor.Grids.Action.Save))
+        {
+            args.Data.ProjectId=Id;
+            if (args.Action=="Add")
+            {
+                if (args.Data.ProjectStartDate < args.Data.ProjectEndDate)
+                {
+                    await _projectDateRepository.Create(args.Data);
+                    await _jsRuntime.ToastrSuccess("New project date was added");
+                }
+                else
+                {
+                    await _jsRuntime.ToastrError("Error while adding");
+                }
+            }
+            if (args.Action=="Edit")
+            {
+                if (args.Data.ProjectStartDate < args.Data.ProjectEndDate)
+                {
+                    await _projectDateRepository.Update(args.Data);
+                    await _jsRuntime.ToastrSuccess("Project date was updated");
+                }
+                else
+                {
+                    await _jsRuntime.ToastrError("Error while editing");
+                }
+            }
+            ProjectDates = await _projectDateRepository.GetAll(Id);
+            projectDateGrid.Refresh();
+        }
+        if (args.RequestType.Equals(Syncfusion.Blazor.Grids.Action.Delete))
+        {
+            await _projectDateRepository.Delete(args.Data.Id);
+            projectDateGrid.Refresh();
+
+        }
+    }
+}
