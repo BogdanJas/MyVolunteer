@@ -14,6 +14,7 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.Configuration.GetValue<string>("BaseAPIUrl")) });
 builder.Services.AddScoped<IProjectService,ProjectService>();
 builder.Services.AddScoped<IProjectSignUpService, ProjectSignUpService>();
+builder.Services.AddScoped<IProjectDateService, ProjectDateService>();
 builder.Services.AddScoped<IVolunteerService,VolunteerService>();
 builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddAuthorizationCore();

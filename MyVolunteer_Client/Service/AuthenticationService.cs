@@ -32,7 +32,11 @@ namespace MyVolunteer_Client.Service
             if (response.IsSuccessStatusCode)
             {
                 await _localStorage.SetItemAsync(SD.Local_Token, result.Token);
-                await _localStorage.SetItemAsync(SD.Local_UserDetails, result.VolunteerDTO);
+                if(SD.Local_UserDetails == null)
+                {
+                    await _localStorage.SetItemAsync(SD.Local_UserDetails, result.VolunteerDTO);
+                    await _localStorage.SetItemAsync(SD.Local_VolunteerId, result.VolunteerDTO.Id);
+                }
                 ((AuthStateProvider)_authStateProvider).NotifyUserLoggedIn(result.Token);
                 _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", result.Token);
                 return new SignInResponseDTO() { IsAuthSuccessful = true };
@@ -47,6 +51,7 @@ namespace MyVolunteer_Client.Service
         {
             await _localStorage.RemoveItemAsync(SD.Local_Token);
             await _localStorage.RemoveItemAsync(SD.Local_UserDetails);
+            await _localStorage.RemoveItemAsync(SD.Local_VolunteerId);
 
             ((AuthStateProvider)_authStateProvider).NotifyUserLogout();
 

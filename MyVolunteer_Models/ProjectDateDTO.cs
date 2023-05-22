@@ -15,6 +15,8 @@ namespace MyVolunteer_Models
         [Required]
         public int ProjectId { get; set; }
         [Required]
+        public string Place { get; set; }
+        [Required]
         public double Salary { get; set; }
         [Required]
         public int VolunteersLimit { get; set; }
@@ -22,5 +24,6 @@ namespace MyVolunteer_Models
         public DateTime ProjectStartDate { get; set; }
         [Required]
         public DateTime ProjectEndDate { get; set; }
+        public bool IsApproved { get; set; }
     }
 }

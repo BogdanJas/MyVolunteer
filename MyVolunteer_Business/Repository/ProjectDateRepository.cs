@@ -76,6 +76,7 @@ namespace MyVolunteer_Business.Repository
                 objFromDb.VolunteersLimit = objDTO.VolunteersLimit;
                 objFromDb.ProjectEndDate = objDTO.ProjectEndDate;
                 objFromDb.ProjectId = objDTO.ProjectId;
+                objFromDb.IsApproved = objDTO.IsApproved;
                 _db.ProjectDates.Update(objFromDb);
                 await _db.SaveChangesAsync();
                 return _mapper.Map<ProjectDate, ProjectDateDTO>(objFromDb);

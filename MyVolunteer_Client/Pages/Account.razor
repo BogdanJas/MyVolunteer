@@ -1,5 +1,5 @@
-﻿@page "/account/{id:int}"
-@page "/account"
+﻿@page "/account"
+@inject ILocalStorageService _localStorageService
 @inject IVolunteerService _volunteerService
 @inject IFileUpload _fileUpload
 @inject IJSRuntime _jsRuntime
@@ -29,8 +29,8 @@ else{
                 <div class="row px-2 text-success border-bottom"><div class="col-7 py-1"><p style="font-size:x-large;margin:0px;">Volunteer Details</p></div></div>
 
                 <div class="form-group pt-2">
-                    <label>Name</label>
-                    <InputText @bind-Value="Volunteer.Name" class="fw-bolder"></InputText>>
+                    <label class="fw-bolder">Name</label>
+                    <InputText @bind-Value="Volunteer.Name"></InputText>
                     <ValidationMessage For="() => Volunteer.Name"></ValidationMessage>
                 </div>
                 <div class="form-group pt-2">
@@ -89,22 +89,22 @@ else{
 </div>
 }
 @code {
-    [Parameter]
-    public int Id { get; set; }
-
     private bool IsProcessing { get; set; } = false;
     private VolunteerDTO Volunteer { get; set; } = new();
+    public string volunteerId { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         IsProcessing = true;
-        Volunteer = await _volunteerService.Get(Id);
+        volunteerId = await _localStorageService.GetItemAsStringAsync("Volunteer Id");
+        Volunteer = await _volunteerService.Get(int.Parse(volunteerId));
         IsProcessing = false;
     }
 
     private async Task UpsertVolunteer()
     {
-        if(Id != null || Id != 0)
+        volunteerId = await _localStorageService.GetItemAsStringAsync("Volunteer Id");
+        if (int.Parse(volunteerId) != null || int.Parse(volunteerId) != 0)
         {
             Volunteer = await _volunteerService.Update(Volunteer);
         }

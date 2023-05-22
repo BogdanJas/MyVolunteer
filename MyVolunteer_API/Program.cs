@@ -28,7 +28,9 @@ namespace MyVolunteer_API
             options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
             builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
+            builder.Services.AddScoped<IProjectDateRepository, ProjectDateRepository>();
             builder.Services.AddScoped<IVolunteerRepository, VolunteerRepository>();
+            builder.Services.AddScoped<IProjectSignUpRepository, ProjectSignUpRepository>();
             builder.Services.AddCors(o => o.AddPolicy("MyVolunteer", builder =>
             {
                 builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();

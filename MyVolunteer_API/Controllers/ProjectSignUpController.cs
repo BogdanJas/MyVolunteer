@@ -21,10 +21,10 @@ namespace MyVolunteer_API.Controllers
             return Ok(await _projectSignUpRepository.GetAll());
         }
 
-        [HttpGet("{projectSignUpHeaderId}")]
-        public async Task<IActionResult> Get(int? projectSignUpHeaderId)
+        [HttpGet("{projectSignUpId}")]
+        public async Task<IActionResult> Get(int? projectSignUpId)
         {
-            if(projectSignUpHeaderId == null || projectSignUpHeaderId == 0)
+            if(projectSignUpId == null || projectSignUpId == 0)
             {
                 return BadRequest(new ErrorModelDTO()
                 {
@@ -32,7 +32,7 @@ namespace MyVolunteer_API.Controllers
                     StatusCode=StatusCodes.Status400BadRequest
                 });
             }
-            var projectSignUpHeader = await _projectSignUpRepository.Get(projectSignUpHeaderId.Value);
+            var projectSignUpHeader = await _projectSignUpRepository.Get(projectSignUpId.Value);
 
             if(projectSignUpHeader == null)
             {
@@ -44,6 +44,11 @@ namespace MyVolunteer_API.Controllers
             }
             return Ok(projectSignUpHeader);
 
+        }
+        [HttpPost]
+        public async Task<IActionResult> Add([FromBody] ProjectSignUpDTO projectSignUpDTO)
+        {
+            return Ok(await _projectSignUpRepository.Create(projectSignUpDTO));
         }
 
     }

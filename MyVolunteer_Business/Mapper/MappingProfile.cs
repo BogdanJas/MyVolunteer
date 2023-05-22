@@ -11,8 +11,7 @@ namespace MyVolunteer_Business.Mapper
             CreateMap<Category,CategoryDTO>().ReverseMap();
             CreateMap<Project, ProjectDTO>().ReverseMap();
             CreateMap<ProjectDate, ProjectDateDTO>().ReverseMap();
-            CreateMap<ProjectSignUpDetail, ProjectSignUpDetailDTO>().ReverseMap();
-            CreateMap<ProjectSignUpHeader, ProjectSignUpHeaderDTO>().ReverseMap();
+            //CreateMap<ProjectSignUpHeader, ProjectSignUpHeaderDTO>().ReverseMap();
             CreateMap<ProjectSignUp, ProjectSignUpDTO>().ReverseMap();
             CreateMap<Volunteer, VolunteerDTO>().ReverseMap();
         }

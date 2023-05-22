@@ -4,9 +4,9 @@
 
 <div>
     <h4 class="card-title text-info">SignUp's List</h4>
-    @if (ProjectSignUpHeaders.Any())
+    @if (ProjectSignUps.Any())
     {
-        <SfGrid @ref="ProjectSignUpHeaderGrid" DataSource="@ProjectSignUpHeaders" AllowPaging="true" AllowFiltering="true" AllowSorting="true">
+        <SfGrid @ref="ProjectSignUpGrid" DataSource="@ProjectSignUps" AllowPaging="true" AllowFiltering="true" AllowSorting="true">
             <GridFilterSettings Type="Syncfusion.Blazor.Grids.FilterType.Menu"></GridFilterSettings>
             <GridSortSettings AllowUnsort="false">
                 <GridSortColumns>
@@ -15,11 +15,11 @@
             </GridSortSettings>
             <GridPageSettings PageSize="5" PageCount="5" PageSizes="true"></GridPageSettings>
             <GridColumns>
-                <GridColumn IsPrimaryKey="true" AllowAdding="false" Field=@nameof(ProjectDateDTO.Id) HeaderText="ID" Visible="false"></GridColumn>
-                <GridColumn Field=@nameof(ProjectSignUpHeaderDTO.Volunteer.Name) HeaderText="Name" Format="t"></GridColumn>
-                <GridColumn Field=@nameof(ProjectSignUpHeaderDTO.Volunteer.Email) HeaderText="Email" Format="t"></GridColumn>
-                <GridColumn Field=@nameof(ProjectSignUpHeaderDTO.Volunteer.PhoneNumber) HeaderText="Phone number" Format="t"></GridColumn>
-                <GridColumn Field=@nameof(ProjectSignUpHeaderDTO.SignDate) HeaderText="Sign Date" Format="d" Type="ColumnType.Date" TextAlign="TextAlign.Right" Width="130"></GridColumn>
+                <GridColumn IsPrimaryKey="true" AllowAdding="false" Field=@nameof(ProjectSignUpDTO.Id) HeaderText="ID" Visible="false"></GridColumn>
+@*                <GridColumn Field=@nameof(ProjectSignUpDTO.Volunteer.Name) HeaderText="Name" Format="t"></GridColumn>
+                <GridColumn Field=@nameof(ProjectSignUpDTO.Volunteer.Email) HeaderText="Email" Format="t"></GridColumn>
+                <GridColumn Field=@nameof(ProjectSignUpDTO.Volunteer.PhoneNumber) HeaderText="Phone number" Format="t"></GridColumn>*@
+                <GridColumn Field=@nameof(ProjectSignUpDTO.SignDate) HeaderText="Sign Date" Format="d" Type="ColumnType.Date" TextAlign="TextAlign.Right" Width="130"></GridColumn>
                 <GridColumn HeaderText="Manage Records" Width="150">
                     
                 </GridColumn>
@@ -41,8 +41,8 @@
 
 @code {
 
-    public SfGrid<ProjectSignUpHeaderDTO> ProjectSignUpHeaderGrid;
-    private IEnumerable<ProjectSignUpHeaderDTO> ProjectSignUpHeaders { get; set; } = new List<ProjectSignUpHeaderDTO>();
+    public SfGrid<ProjectSignUpDTO> ProjectSignUpGrid;
+    private IEnumerable<ProjectSignUpDTO> ProjectSignUps { get; set; } = new List<ProjectSignUpDTO>();
     private bool IsLoading { get; set; } = false;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -60,8 +60,7 @@
     {
         IsLoading = true;
         StateHasChanged();
-        var projectSignUps = await _projectSignUpRepository.GetAll();
-        ProjectSignUpHeaders = projectSignUps.Select(u => u.ProjectSignUpHeader);
+        ProjectSignUps = await _projectSignUpRepository.GetAll();
         IsLoading = false;
         StateHasChanged();
     }

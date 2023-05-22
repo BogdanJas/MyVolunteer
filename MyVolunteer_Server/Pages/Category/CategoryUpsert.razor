@@ -18,7 +18,6 @@
         {
             <EditForm Model="Category" OnValidSubmit="UpsertCategory">
                 <DataAnnotationsValidator />
-                @*<ValidationSummary/>*@
                 <div class="form-group">
                     <label>Name</label>
                     <InputText @bind-Value="Category.Name" class="form-control"></InputText>
@@ -47,12 +46,10 @@
         {
             if (Id == 0)
             {
-                //create
                 IsLoading = false;
             }
             else
             {
-                //update
                 Title = "Update";
                 await LoadCategory();
             }
@@ -72,12 +69,10 @@
     {
         if (Category.Id == 0)
         {
-            //create
             await _categoryRepository.Create(Category);
         }
         else
         {
-            //update
             await _categoryRepository.Update(Category);
         }
         _navigationManager.NavigateTo("category");

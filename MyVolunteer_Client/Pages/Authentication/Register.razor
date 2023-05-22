@@ -72,9 +72,10 @@
             Volunteer.Email = SignUpRequest.Email;
             Volunteer.PhoneNumber = SignUpRequest.PhoneNumber;
             Volunteer.Password = SignUpRequest.Password;
-            var newVolunteer = await _volunteerService.Add(Volunteer);
+            Volunteer.ConfirmPassword = SignUpRequest.ConfirmPassword;
+            await _volunteerService.Add(Volunteer);
 
-            _navigationManager.NavigateTo("/account/" + newVolunteer.Id);
+            _navigationManager.NavigateTo("/login");
         }
         else
         {

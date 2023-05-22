@@ -11,18 +11,12 @@ namespace MyVolunteer_Models
     {
         [Key]
         public int Id { get; set; }
-        [Required]
-        public string Name { get; set; }
-        [Required]
-        public string PhoneNumber { get; set; }
-        [Required]
-        public string StreetAddress { get; set; }
-        [Required]
-        public string State { get; set; }
-        [Required]
-        public string City { get; set; }
-        [Required]
-        public string PostalCode { get; set; }
+        public string? Name { get; set; }
+        public string? PhoneNumber { get; set; }
+        public string? StreetAddress { get; set; }
+        public string? State { get; set; }
+        public string? City { get; set; }
+        public string? PostalCode { get; set; }
 
         [Required(ErrorMessage = "Email is required")]
         [RegularExpression("^[a-zA-Z0-9_.-]+@[a-zA-Z0-9-]+.[a-zA-Z0-9-.]+$", ErrorMessage = "Invalid email address")]
@@ -34,9 +28,9 @@ namespace MyVolunteer_Models
         [Required(ErrorMessage = "Confirm password is required")]
         [DataType(DataType.Password)]
         [Compare("Password", ErrorMessage = "Password and confirm password is not matched")]
-        public string ConfirmPassword { get; set; }
-        public string ImageUrl { get; set; }
-        public string ResumeUrl { get; set; }
-        public string SignInId { get; set; }
+        public string? ConfirmPassword { get; set; }
+        public string? ImageUrl { get; set; }
+        public string? ResumeUrl { get; set; }
+        public string? SignInId { get; set; }
     }
 }

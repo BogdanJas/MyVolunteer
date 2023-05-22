@@ -37,6 +37,9 @@ else
         </GridSortSettings>
         <GridPageSettings PageSize="5" PageCount="5" PageSizes="true"></GridPageSettings>
         <GridColumns>
+            <AuthorizeView Roles="@AdminRole">
+                <GridColumn Field=@nameof(ProjectDateDTO.IsApproved) DisplayAsCheckBox=@true HeaderText="Approved" Width="140" EditType="EditType.BooleanEdit" Type="ColumnType.Boolean"></GridColumn>
+            </AuthorizeView>
             <GridColumn IsPrimaryKey="true" AllowAdding="false" Field=@nameof(ProjectDateDTO.Id) HeaderText="ID" Visible="false"></GridColumn>
             <GridColumn Field=@nameof(ProjectDateDTO.Salary) HeaderText="Salary" Format="C2"></GridColumn>
             <GridColumn Field="@nameof(ProjectDateDTO.VolunteersLimit)" HeaderText="Limit" Format="N0"></GridColumn>
@@ -58,17 +61,13 @@ else
 
 @code {
     [Parameter]
-    public int Id { get; set; } 
+    public int Id { get; set; }
+    public string AdminRole = SD.Role_Admin;
     private ProjectDTO Project { get; set; } = new();
     private IEnumerable<ProjectDateDTO> ProjectDates { get; set; } = new List<ProjectDateDTO>();
     private bool IsLoading { get; set; } = true;
     public SfGrid<ProjectDateDTO> projectDateGrid;
 
-
-    IEnumerable<String> SizeList = new List<String>()
-    {
-        "Small","Medium","Large","8oz","16oz","24oz"
-    };
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {

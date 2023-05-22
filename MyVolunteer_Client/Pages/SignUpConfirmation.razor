@@ -1,0 +1,19 @@
+﻿@page "/confirmation"
+<div class="container">
+    <div class="row mt-4 pt-4">
+        <div class="col-10 offset-1 text-center">
+            <h2 class="text-warning">Sign - up Confirmed</h2>
+            <p>Thank you for sign up for this project. Hope to see you soon :)</p>
+        </div>
+        <div class="col-8 offset-2">
+            <img src="/images/confirmation.jpg" width="100%" style="border-radius:30px;" />
+        </div>
+        <div>
+            <a href="/" class="btn btn-success form-control fw-bolder fs-2" style="height:60px">Check other projects</a>
+        </div>
+    </div>
+</div>
+
+@code {
+    private bool IsProcessing { get; set; } = false;
+}

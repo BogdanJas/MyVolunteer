@@ -1,7 +1,14 @@
 ﻿@page "/details/{ProjectId:int}"
 @inject IProjectService _projectService
+@inject IProjectDateService _projectDateService
+@inject IProjectSignUpService _projectSignUpService
+@inject IVolunteerService _volunteerService
+@inject ILocalStorageService _localStorage
+@inject IJSRuntime _jsRuntime
+@inject NavigationManager _navigationManager
 @using MyVolunteer_Client.ViewModels
 
+<_projectSignUpConfirmation IsParentComponentProcessing="IsProcessing" ConfirmationChanged="ConfirmSignUp_Click"></_projectSignUpConfirmation>
 @if (IsProcessing)
 {
     <div style="position:fixed;top:50%;left:50%;margin-top:-50px;margin-left:-100px;">
@@ -9,7 +16,7 @@
     </div>
 } 
 else{
-    <EditForm OnValidSubmit="ProjectSignUp" Model="DetailsVM" method="post">
+    <EditForm Model="DetailsVM" method="post">
         <div class="card container mt-4">
             <div class="card-header ml-0  row">
                 <div class="col-12 col-md-6">
@@ -26,7 +33,7 @@ else{
                         <div class="col-10">
                             <p>@((MarkupString)@Project.Description)</p>
                             <div class="row">
-                                @foreach (var projectDate in Project.ProjectDates.Where(p => p.VolunteersLimit > 0))
+                                @foreach (var projectDate in Project.ProjectDates.Where(p => p.VolunteersLimit > 0 && p.IsApproved))
                                 {
                                     if (projectDate.Id == DetailsVM.SelectedProjectDateId)
                                     {
@@ -62,7 +69,7 @@ else{
                         <div class="col-12 col-md-4 pb-1">
                             @if(DetailsVM.SelectedProjectDateId > 0)
                             {
-                                <button type="submit" value="Sign Up" class="btn btn-primary form-control">Sign up</button>
+                                <button type="submit" value="Sign Up" class="btn btn-primary form-control" @onclick="()=>HandleConfirmation(DetailsVM.SelectedProjectDateId)">Sign up</button>
                             }
                             else{
                                 <button type="submit" value="Sign Up" disabled class="btn btn-primary form-control">Sign up</button>
@@ -81,6 +88,7 @@ else{
     [Parameter]
     public int ProjectId{ get; set; }
 
+    public int SelectedProjectId { get; set; }
     public bool IsProcessing { get; set; } = false;
     public ProjectDTO Project { get; set; } = new();
     public DetailsVM DetailsVM { get; set; } = new();
@@ -98,8 +106,35 @@ else{
         DetailsVM.SelectedProjectDateId = projectDateId;
     }
 
+    private void HandleConfirmation(int id)
+    {
+        SelectedProjectId = id;
+        _jsRuntime.InvokeVoidAsync("ShowConfirmationModal");
+    }
+
+    private async void ConfirmSignUp_Click(bool isConfirmed)
+    {
+        IsProcessing = true;
+        if(isConfirmed && SelectedProjectId != 0)
+        {
+            await _jsRuntime.InvokeVoidAsync("HideConfirmationModal");
+            await ProjectSignUp();
+        }
+        IsProcessing = false;
+    }
+
     private async Task ProjectSignUp()
     {
-        
+        var projectDate = await _projectDateService.Get(SelectedProjectId);
+        var volunteerId = await _localStorage.GetItemAsStringAsync("Volunteer Id");
+        ProjectSignUpDTO projectSignUp = new ProjectSignUpDTO()
+            {
+                ProjectId = projectDate.ProjectId,
+                ProjectDateId = projectDate.Id,
+                VolunteerId = int.Parse(volunteerId),
+                SignDate = DateTime.Now
+            };
+        await _projectSignUpService.Add(projectSignUp);
+        _navigationManager.NavigateTo("confirmation");
     }
 }

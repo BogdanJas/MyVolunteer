@@ -1,6 +1,7 @@
 ﻿using MyVolunteer_Client.Service.IService;
 using MyVolunteer_Models;
 using Newtonsoft.Json;
+using System.Text;
 
 namespace MyVolunteer_Client.Service
 {
@@ -12,6 +13,15 @@ namespace MyVolunteer_Client.Service
         {
             _httpClient = httpClient;
             _configuration = configuration;
+        }
+        public async Task<ProjectSignUpDTO> Add(ProjectSignUpDTO projectSignUp)
+        {
+            var content = JsonConvert.SerializeObject(projectSignUp);
+            var bodyContent = new StringContent(content, Encoding.UTF8, "application/json");
+            var response = await _httpClient.PostAsync("api/projectSignUp/add", bodyContent);
+            var contentTemp = await response.Content.ReadAsStringAsync();
+            var result = JsonConvert.DeserializeObject<ProjectSignUpDTO>(contentTemp);
+            return result;
         }
         public async Task<IEnumerable<ProjectSignUpDTO>> GetAll(string? userId)
         {

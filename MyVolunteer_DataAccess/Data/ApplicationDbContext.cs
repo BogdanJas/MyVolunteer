@@ -18,7 +18,8 @@ namespace MyVolunteer_DataAccess.Data
         public DbSet<Project> Projects { get; set; }    
         public DbSet<ProjectDate> ProjectDates { get; set; }
         public DbSet<Volunteer> Volunteers { get; set; }
-        public DbSet<ProjectSignUpHeader>  ProjectSignUpHeaders { get; set; }
-        public DbSet<ProjectSignUpDetail> ProjectSignUpDetails { get; set; }   
+        public DbSet<ProjectSignUp> ProjectSignUps { get; set; }
+        //public DbSet<ProjectSignUpHeader> ProjectSignUpHeaders { get; set; }
+        //public DbSet<ProjectSignUpDetail> ProjectSignUpDetails { get; set; }
     }
 }

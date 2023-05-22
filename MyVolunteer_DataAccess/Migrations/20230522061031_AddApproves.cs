@@ -5,24 +5,24 @@
 namespace MyVolunteer_DataAccess.Migrations
 {
     /// <inheritdoc />
-    public partial class AddLimitsForProject : Migration
+    public partial class AddApproves : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<int>(
-                name: "VolunteersLimit",
+            migrationBuilder.AddColumn<bool>(
+                name: "IsApproved",
                 table: "ProjectDates",
-                type: "int",
+                type: "bit",
                 nullable: false,
-                defaultValue: 0);
+                defaultValue: false);
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "VolunteersLimit",
+                name: "IsApproved",
                 table: "ProjectDates");
         }
     }

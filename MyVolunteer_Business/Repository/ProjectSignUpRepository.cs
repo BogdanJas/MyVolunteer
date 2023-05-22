@@ -16,11 +16,13 @@ namespace MyVolunteer_Business.Repository
     {
         private readonly ApplicationDbContext _db;
         private readonly IMapper _mapper;
+        public readonly IProjectDateRepository _projectDateRepository;
 
-        public ProjectSignUpRepository(ApplicationDbContext db, IMapper mapper)
+        public ProjectSignUpRepository(ApplicationDbContext db, IMapper mapper, IProjectDateRepository projectDateRepository)
         {
             _db = db;
             _mapper = mapper;
+            _projectDateRepository = projectDateRepository;
         }
 
         public async Task<ProjectSignUpDTO> Create(ProjectSignUpDTO body)
@@ -28,22 +30,13 @@ namespace MyVolunteer_Business.Repository
             try
             {
                 var obj = _mapper.Map<ProjectSignUpDTO, ProjectSignUp>(body);
-                _db.ProjectSignUpHeaders.Add(obj.ProjectSignUpHeader);
+                _db.ProjectSignUps.Add(obj);
+                var project = await _projectDateRepository.Get(body.ProjectDateId);
+                project.VolunteersLimit--;
+                await _projectDateRepository.Update(project);
                 await _db.SaveChangesAsync();
 
-                foreach (var details in obj.ProjectSignUpDetails)
-                {
-                    details.ProjectSignUpHeaderId = obj.ProjectSignUpHeader.Id;
-                }
-                _db.ProjectSignUpDetails.AddRange(obj.ProjectSignUpDetails);
-                await _db.SaveChangesAsync();
-
-                return new ProjectSignUpDTO()
-                {
-                    ProjectSignUpHeader = _mapper.Map<ProjectSignUpHeader, ProjectSignUpHeaderDTO>(obj.ProjectSignUpHeader),
-                    ProjectSignUpDetail = _mapper.Map<IEnumerable<ProjectSignUpDetail>, IEnumerable<ProjectSignUpDetailDTO>>(obj.ProjectSignUpDetails).ToList()
-                };
-
+                return _mapper.Map<ProjectSignUp, ProjectSignUpDTO>(obj);
             }
             catch (Exception ex)
             {
@@ -55,13 +48,10 @@ namespace MyVolunteer_Business.Repository
 
         public async Task<int> Delete(int Id)
         {
-            var objHeader = await _db.ProjectSignUpHeaders.FirstOrDefaultAsync(u => u.Id == Id);
-            if (objHeader != null)
+            var obj = await _db.ProjectSignUps.FirstOrDefaultAsync(u => u.Id == Id);
+            if (obj != null)
             {
-                IEnumerable<ProjectSignUpDetail> objDetail = _db.ProjectSignUpDetails.Where(u => u.ProjectSignUpHeaderId == Id);
-
-                _db.ProjectSignUpDetails.RemoveRange(objDetail);
-                _db.ProjectSignUpHeaders.Remove(objHeader);
+                _db.ProjectSignUps.Remove(obj);
                 return _db.SaveChanges();
             }
             return 0;
@@ -70,50 +60,14 @@ namespace MyVolunteer_Business.Repository
 
         public async Task<ProjectSignUpDTO> Get(int Id)
         {
-            ProjectSignUp projectSignUp = new()
-            {
-                ProjectSignUpHeader = _db.ProjectSignUpHeaders.FirstOrDefault(u => u.Id == Id),
-                ProjectSignUpDetails = _db.ProjectSignUpDetails.Where(u => u.ProjectSignUpHeaderId == Id).ToList(),
-            };
-            if(projectSignUp != null)
-            {
-                return _mapper.Map<ProjectSignUp,ProjectSignUpDTO>(projectSignUp);
-            }
-            return new ProjectSignUpDTO();
+            var obj = await _db.ProjectSignUps.FirstOrDefaultAsync(u => u.Id == Id);
+            return _mapper.Map<ProjectSignUp, ProjectSignUpDTO>(obj);
         }
 
         public async Task<IEnumerable<ProjectSignUpDTO>> GetAll(string? userId = null)
         {
-            List<ProjectSignUp> projectSignUpFromDb = new List<ProjectSignUp>();
-            IEnumerable<ProjectSignUpHeader> projectSignUpHeaderList = _db.ProjectSignUpHeaders;
-            IEnumerable<ProjectSignUpDetail> projectSignUpDetailList = _db.ProjectSignUpDetails;
-
-            foreach (ProjectSignUpHeader header in projectSignUpHeaderList)
-            {
-                ProjectSignUp projectSignUp = new()
-                {
-                    ProjectSignUpHeader = header,
-                    ProjectSignUpDetails = projectSignUpDetailList.Where(u => u.ProjectSignUpHeaderId == header.Id).ToList(),
-                };
-                projectSignUpFromDb.Add(projectSignUp); 
-            }
-            //do some filtering #TODO
-
-            return _mapper.Map<IEnumerable<ProjectSignUp>, IEnumerable<ProjectSignUpDTO>>(projectSignUpFromDb);
+            return _mapper.Map<IEnumerable<ProjectSignUp>, IEnumerable<ProjectSignUpDTO>>(_db.ProjectSignUps);
         }
-
-        public async Task<ProjectSignUpHeaderDTO> UpdateHeader(ProjectSignUpHeaderDTO body)
-        {
-            if (body != null)
-            {
-                var projectSignUpHeaderFromDb = _db.ProjectSignUpHeaders.FirstOrDefault(u => u.Id == body.Id);
-                projectSignUpHeaderFromDb.VolunteerId = body.VolunteerId;
-                projectSignUpHeaderFromDb.SignDate = body.SignDate;
-
-                await _db.SaveChangesAsync();
-                return _mapper.Map<ProjectSignUpHeader, ProjectSignUpHeaderDTO>(projectSignUpHeaderFromDb);
-            }
-            return new ProjectSignUpHeaderDTO();
-        }
+        
     }
 }

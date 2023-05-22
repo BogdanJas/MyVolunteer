@@ -16,9 +16,9 @@ namespace MyVolunteer_API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Add([FromBody] VolunteerDTO volunteer)
+        public async Task<VolunteerDTO> Add([FromBody] VolunteerDTO volunteer)
         {
-            return Ok(await _volunteerRepository.Create(volunteer));
+            return await _volunteerRepository.Create(volunteer);
         }
 
         [HttpPut]

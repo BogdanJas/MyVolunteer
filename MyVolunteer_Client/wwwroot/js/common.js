@@ -7,10 +7,10 @@
     }
 }
 
-function ShowDeleteConfirmationModal() {
-    $('#deleteConfirmationModal').modal('show');
+function ShowConfirmationModal() {
+    $('#projectSignUpConfirmationModal').modal('show');
 }
 
-function HideDeleteConfirmationModal() {
-    $('#deleteConfirmationModal').modal('hide');
+function HideConfirmationModal() {
+    $('#projectSignUpConfirmationModal').modal('hide');
 }

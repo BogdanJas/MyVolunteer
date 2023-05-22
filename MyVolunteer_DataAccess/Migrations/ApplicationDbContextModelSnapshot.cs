@@ -284,6 +284,9 @@ namespace MyVolunteer_DataAccess.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<bool>("IsApproved")
+                        .HasColumnType("bit");
+
                     b.Property<DateTime>("ProjectEndDate")
                         .HasColumnType("datetime2");
 
@@ -306,7 +309,7 @@ namespace MyVolunteer_DataAccess.Migrations
                     b.ToTable("ProjectDates");
                 });
 
-            modelBuilder.Entity("MyVolunteer_DataAccess.ProjectSignUpDetail", b =>
+            modelBuilder.Entity("MyVolunteer_DataAccess.ProjectSignUp", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -314,40 +317,30 @@ namespace MyVolunteer_DataAccess.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("ProjectId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ProjectName")
+                    b.Property<int?>("ProjectDateId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("ProjectSignUpHeaderId")
                         .HasColumnType("int");
 
-                    b.HasKey("Id");
-
-                    b.ToTable("ProjectSignUpDetails");
-                });
-
-            modelBuilder.Entity("MyVolunteer_DataAccess.ProjectSignUpHeader", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
+                    b.Property<int?>("ProjectId")
+                        .IsRequired()
                         .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("SignDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("VolunteerId")
+                    b.Property<int?>("VolunteerId")
+                        .IsRequired()
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ProjectDateId");
+
+                    b.HasIndex("ProjectId");
+
                     b.HasIndex("VolunteerId");
 
-                    b.ToTable("ProjectSignUpHeaders");
+                    b.ToTable("ProjectSignUps");
                 });
 
             modelBuilder.Entity("MyVolunteer_DataAccess.Volunteer", b =>
@@ -359,7 +352,6 @@ namespace MyVolunteer_DataAccess.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("City")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Email")
@@ -367,11 +359,9 @@ namespace MyVolunteer_DataAccess.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ImageUrl")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Password")
@@ -383,19 +373,15 @@ namespace MyVolunteer_DataAccess.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PostalCode")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ResumeUrl")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("State")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("StreetAddress")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -476,13 +462,29 @@ namespace MyVolunteer_DataAccess.Migrations
                     b.Navigation("Project");
                 });
 
-            modelBuilder.Entity("MyVolunteer_DataAccess.ProjectSignUpHeader", b =>
+            modelBuilder.Entity("MyVolunteer_DataAccess.ProjectSignUp", b =>
                 {
+                    b.HasOne("MyVolunteer_DataAccess.ProjectDate", "ProjectDate")
+                        .WithMany()
+                        .HasForeignKey("ProjectDateId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("MyVolunteer_DataAccess.Project", "Project")
+                        .WithMany()
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("MyVolunteer_DataAccess.Volunteer", "Volunteer")
                         .WithMany()
                         .HasForeignKey("VolunteerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Project");
+
+                    b.Navigation("ProjectDate");
 
                     b.Navigation("Volunteer");
                 });
