@@ -70,8 +70,8 @@ namespace MyVolunteer_Business.Repository
                 objFromDb.PostalCode = objDTO.PostalCode;
                 objFromDb.Email = objDTO.Email;
                 objFromDb.Password = objDTO.Password;
-                objFromDb.ImageUrl = objFromDb.ImageUrl;
-                objFromDb.ResumeUrl = objDTO.ResumeUrl;
+                objFromDb.Sex = objDTO.Sex;
+                objFromDb.DateOfBirth = objDTO.DateOfBirth;
 
                 _db.Volunteers.Update(objFromDb);
                 await _db.SaveChangesAsync();

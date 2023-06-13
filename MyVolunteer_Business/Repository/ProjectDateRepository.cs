@@ -72,6 +72,7 @@ namespace MyVolunteer_Business.Repository
             if (objFromDb != null)
             {
                 objFromDb.Salary = objDTO.Salary;
+                objFromDb.Place = objDTO.Place;
                 objFromDb.ProjectStartDate = objDTO.ProjectStartDate;
                 objFromDb.VolunteersLimit = objDTO.VolunteersLimit;
                 objFromDb.ProjectEndDate = objDTO.ProjectEndDate;

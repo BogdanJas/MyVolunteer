@@ -117,20 +117,18 @@
     {
         if (Project.Id==0)
         {
-            //create
             await _projectRepository.Create(Project);
-            await _jsRuntime.ToastrSuccess("Project created successfully.");
+            await _jsRuntime.ToastrSuccess("ProjectDate created successfully.");
         }
         else
         {
-            //update
             if (OldImageUrl!=Project.ImageUrl)
             {
                 _fileUpload.DeleteFile(OldImageUrl);
 
             }
             await _projectRepository.Update(Project);
-            await _jsRuntime.ToastrSuccess("Project updated successfully.");
+            await _jsRuntime.ToastrSuccess("ProjectDate updated successfully.");
         }
         _navigationManager.NavigateTo("project");
 

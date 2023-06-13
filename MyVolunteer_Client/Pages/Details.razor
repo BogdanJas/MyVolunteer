@@ -37,19 +37,19 @@ else{
                                 {
                                     if (projectDate.Id == DetailsVM.SelectedProjectDateId)
                                     {
-                                        //this product is selected by user
                                         <div class="col-2 bg-light text-center pt-2 m-2" style="border:3px solid #28A745; border-radius:10px;box-shadow:5px">
-                                            <p>@projectDate.Salary.ToString("c")</p>
-                                            <p>@projectDate.ProjectStartDate.ToString("d") - @projectDate.ProjectEndDate.ToString("d")</p>
+                                            <p>Place: @projectDate.Place</p>
+                                            <p>Salary: @projectDate.Salary.ToString("c")</p>
+                                            <p>Termin: @projectDate.ProjectStartDate.ToString("d") - @projectDate.ProjectEndDate.ToString("d")</p>
                                         </div>
                                     }
                                     else
                                     {
-                                        //all other products
                                         <div class="col-2 bg-light text-center pt-2 m-2" style="border:1px solid; border-radius:10px;box-shadow:5px"
                                         @onclick="(args)=>SelectedprojectDate(args,projectDate.Id)">
-                                            <p>@projectDate.Salary.ToString("c")</p>
-                                            <p>@projectDate.ProjectStartDate.ToString("d") - @projectDate.ProjectEndDate.ToString("d")</p>
+                                            <p>Place: @projectDate.Place</p>
+                                            <p>Salary: @projectDate.Salary.ToString("c")</p>
+                                            <p>Termin: @projectDate.ProjectStartDate.ToString("d") - @projectDate.ProjectEndDate.ToString("d")</p>
                                         </div>
                                     }
                                 }
@@ -74,9 +74,6 @@ else{
                             else{
                                 <button type="submit" value="Sign Up" disabled class="btn btn-primary form-control">Sign up</button>
                             }
-                        </div>
-                        <div class="col-12 col-md-4 pb-1">
-                            <a class="btn btn-success form-control " href="/">Contact for more details</a>
                         </div>
                     </div>
                 </div>
@@ -127,12 +124,21 @@ else{
     {
         var projectDate = await _projectDateService.Get(SelectedProjectId);
         var volunteerId = await _localStorage.GetItemAsStringAsync("Volunteer Id");
+        var volunteer = await _volunteerService.Get(int.Parse(volunteerId));
         ProjectSignUpDTO projectSignUp = new ProjectSignUpDTO()
             {
-                ProjectId = projectDate.ProjectId,
-                ProjectDateId = projectDate.Id,
+                ProjectId = projectDate.Id,
                 VolunteerId = int.Parse(volunteerId),
-                SignDate = DateTime.Now
+                SignDate = DateTime.Now,
+                ProjectName = Project.Name,
+                ProjectStartDate = projectDate.ProjectStartDate,
+                ProjectEndDate = projectDate.ProjectEndDate,
+                ProjectPlace = projectDate.Place,
+                VolunteerName = volunteer.Name,
+                VolunteerDateOfBirth = volunteer.DateOfBirth,
+                VolunteerEmail = volunteer.Email,
+                VolunteerPhoneNumber = volunteer.PhoneNumber,
+                VolunteerSex = volunteer.Sex
             };
         await _projectSignUpService.Add(projectSignUp);
         _navigationManager.NavigateTo("confirmation");

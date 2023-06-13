@@ -12,8 +12,8 @@ using MyVolunteer_DataAccess.Data;
 namespace MyVolunteer_DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230521142723_Initial")]
-    partial class Initial
+    [Migration("20230613065120_Inite")]
+    partial class Inite
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -255,21 +255,19 @@ namespace MyVolunteer_DataAccess.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ImageUrl")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("OrganizatonFavourite")
+                    b.Property<bool?>("OrganisationFavourite")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("VolunteerFavourite")
+                    b.Property<bool?>("VolunteerFavourite")
                         .HasColumnType("bit");
 
                     b.HasKey("Id");
@@ -286,6 +284,13 @@ namespace MyVolunteer_DataAccess.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("IsApproved")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Place")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("ProjectEndDate")
                         .HasColumnType("datetime2");
@@ -317,26 +322,21 @@ namespace MyVolunteer_DataAccess.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("ProjectDateId")
-                        .IsRequired()
+                    b.Property<int>("ProjectDateId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("ProjectId")
-                        .IsRequired()
+                    b.Property<int>("ProjectId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("SignDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("VolunteerId")
-                        .IsRequired()
+                    b.Property<int>("VolunteerId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.HasIndex("ProjectDateId");
-
-                    b.HasIndex("ProjectId");
 
                     b.HasIndex("VolunteerId");
 
@@ -354,14 +354,15 @@ namespace MyVolunteer_DataAccess.Migrations
                     b.Property<string>("City")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime?>("DateOfBirth")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ImageUrl")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Password")
@@ -375,8 +376,8 @@ namespace MyVolunteer_DataAccess.Migrations
                     b.Property<string>("PostalCode")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ResumeUrl")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<bool?>("Sex")
+                        .HasColumnType("bit");
 
                     b.Property<string>("State")
                         .HasColumnType("nvarchar(max)");
@@ -470,19 +471,11 @@ namespace MyVolunteer_DataAccess.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("MyVolunteer_DataAccess.Project", "Project")
-                        .WithMany()
-                        .HasForeignKey("ProjectId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("MyVolunteer_DataAccess.Volunteer", "Volunteer")
                         .WithMany()
                         .HasForeignKey("VolunteerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Project");
 
                     b.Navigation("ProjectDate");
 

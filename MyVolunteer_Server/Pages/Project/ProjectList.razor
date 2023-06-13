@@ -55,14 +55,12 @@
         {
             if (IsLoading)
             {
-                //loading gif
                 <div class="text-center">
                     <img src="/images/loading.gif">
                 </div>
             }
             else
             {
-                //no records
                 <p>No records found.</p>
             }
         }
@@ -130,7 +128,7 @@
 
             }
             await _projectRepository.Delete(DeleteprojectId);
-            await _jsRuntime.ToastrSuccess("Project Deleted successfully");
+            await _jsRuntime.ToastrSuccess("ProjectDate Deleted successfully");
             await Loadprojects();
             await _jsRuntime.InvokeVoidAsync("HideDeleteConfirmationModal");
         }

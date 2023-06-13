@@ -10,15 +10,12 @@ namespace MyVolunteer_DataAccess
     public class ProjectSignUp
     {
         public int Id { get; set; }
-        public int? ProjectId { get; set; }
         [ForeignKey("ProjectId")]
-        public Project Project { get; set; }
-        public int? ProjectDateId { get; set; }
-        [ForeignKey("ProjectDateId")]
+        public int ProjectId { get; set; }
         public ProjectDate ProjectDate { get; set; }
-        public int? VolunteerId { get; set; }
-        [ForeignKey("VolunteerId")]
+        [ForeignKey("Id")]
+        public int VolunteerId { get; set; }
         public Volunteer Volunteer { get; set; }
-        public DateTime SignDate { get; set; }  
+        public DateTime SignDate { get; set; }
     }
 }

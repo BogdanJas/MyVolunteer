@@ -67,7 +67,7 @@ namespace MyVolunteer_Business.Repository
                 objFromDb.Description = objDTO.Description;
                 objFromDb.ImageUrl = objDTO.ImageUrl;
                 objFromDb.CategoryId = objDTO.CategoryId;
-                objFromDb.OrganizatonFavourite = objDTO.OrganisationFavourite;
+                objFromDb.OrganisationFavourite = objDTO.OrganisationFavourite;
                 objFromDb.VolunteerFavourite = objDTO.VolunteerFavourite;
                 _db.Projects.Update(objFromDb);
                 await _db.SaveChangesAsync();

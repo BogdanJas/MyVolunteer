@@ -13,13 +13,13 @@ namespace MyVolunteer_DataAccess
         [Key]
         public int Id { get; set; }
         public string Name { get; set; }
-        public string Description { get; set; }
-        public bool OrganizatonFavourite { get; set; }
-        public bool VolunteerFavourite { get; set; }
-        public string ImageUrl { get; set; }
+        public string? Description { get; set; }
+        public bool? OrganisationFavourite { get; set; }
+        public bool? VolunteerFavourite { get; set; }
+        public string? ImageUrl { get; set; }
         public int CategoryId { get; set; }
         [ForeignKey("CategoryId")]
-        public Category Category { get; set; }
+        public Category? Category { get; set; }
         public ICollection<ProjectDate> ProjectDates { get; set; }
     }
 }

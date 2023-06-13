@@ -15,7 +15,7 @@ else{
             @foreach(var category in Projects.Select(u => u.Category.Name).Distinct())
             {
                 <h2 class="text-success pl-1"><b>@category</b></h2>
-                @foreach(var project in Projects.Where(u => u.Category.Name == category && u.ProjectDates.Where(p => p.VolunteersLimit != 0).Count() > 0))
+                @foreach(var project in Projects.Where(u => u.Category.Name == category && u.ProjectDates.Where(p => p.VolunteersLimit != 0 && p.ProjectEndDate >= DateTime.Now).Count() > 0))
                 {
                     <div class="col-lg-4 col-md-6 pb-4 filter">
                         <div class="card bg-white rounded shadow-sm" style="border:1px solid #222">
@@ -43,6 +43,9 @@ else{
                                 </div>
                                 <div class="col-6 border-0">
                                     <span class="badge p-2 border w-100 text-dark bg-warning">@project.ProjectDates.OrderBy(u => u.Salary).FirstOrDefault()?.ProjectEndDate.ToString("d")</span>
+                                </div>
+                                <div class="col-12 pt-2" style="text-align:justify">
+                                    <p>Place : @(@project.ProjectDates.OrderBy(u => u.Salary).FirstOrDefault()?.Place)</p>
                                 </div>
                                 <div class="col-12 pt-2" style="font-size:13px; text-align:justify">
                                     <p>@((MarkupString)@project.Description)</p>

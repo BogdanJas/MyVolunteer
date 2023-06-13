@@ -14,7 +14,7 @@ namespace MyVolunteer_DataAccess
         public int Id { get; set; }
         public int ProjectId { get; set; }
         [ForeignKey("ProjectId")]
-        public Project Project { get; set; }
+        public Project? Project { get; set; }
         public string Place { get; set; }
         public double Salary { get; set; }
         public int VolunteersLimit { get; set; }

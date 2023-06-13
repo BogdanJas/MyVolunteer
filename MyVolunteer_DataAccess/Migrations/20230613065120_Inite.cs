@@ -1,5 +1,4 @@
 ﻿using System;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
@@ -7,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace MyVolunteer_DataAccess.Migrations
 {
     /// <inheritdoc />
-    public partial class Initial : Migration
+    public partial class Inite : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -71,16 +70,16 @@ namespace MyVolunteer_DataAccess.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    DateOfBirth = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    Sex = table.Column<bool>(type: "bit", nullable: true),
                     PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     StreetAddress = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     State = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     City = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     PostalCode = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ResumeUrl = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Password = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -200,10 +199,10 @@ namespace MyVolunteer_DataAccess.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    OrganizatonFavourite = table.Column<bool>(type: "bit", nullable: false),
-                    VolunteerFavourite = table.Column<bool>(type: "bit", nullable: false),
-                    ImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    OrganisationFavourite = table.Column<bool>(type: "bit", nullable: true),
+                    VolunteerFavourite = table.Column<bool>(type: "bit", nullable: true),
+                    ImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CategoryId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -224,10 +223,12 @@ namespace MyVolunteer_DataAccess.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ProjectId = table.Column<int>(type: "int", nullable: false),
+                    Place = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Salary = table.Column<double>(type: "float", nullable: false),
                     VolunteersLimit = table.Column<int>(type: "int", nullable: false),
                     ProjectStartDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    ProjectEndDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    ProjectEndDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsApproved = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -258,17 +259,14 @@ namespace MyVolunteer_DataAccess.Migrations
                         name: "FK_ProjectSignUps_ProjectDates_ProjectDateId",
                         column: x => x.ProjectDateId,
                         principalTable: "ProjectDates",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_ProjectSignUps_Projects_ProjectId",
-                        column: x => x.ProjectId,
-                        principalTable: "Projects",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_ProjectSignUps_Volunteers_VolunteerId",
                         column: x => x.VolunteerId,
                         principalTable: "Volunteers",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
@@ -324,11 +322,6 @@ namespace MyVolunteer_DataAccess.Migrations
                 name: "IX_ProjectSignUps_ProjectDateId",
                 table: "ProjectSignUps",
                 column: "ProjectDateId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ProjectSignUps_ProjectId",
-                table: "ProjectSignUps",
-                column: "ProjectId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ProjectSignUps_VolunteerId",

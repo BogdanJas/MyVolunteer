@@ -1,5 +1,7 @@
+using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
@@ -31,6 +33,7 @@ namespace MyVolunteer_API
             builder.Services.AddScoped<IProjectDateRepository, ProjectDateRepository>();
             builder.Services.AddScoped<IVolunteerRepository, VolunteerRepository>();
             builder.Services.AddScoped<IProjectSignUpRepository, ProjectSignUpRepository>();
+            builder.Services.AddScoped<IEmailSender,EmailSender>();
             builder.Services.AddCors(o => o.AddPolicy("MyVolunteer", builder =>
             {
                 builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();

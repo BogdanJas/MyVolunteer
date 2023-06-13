@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using MyVolunteer_Business.Repository.IRepository;
 using MyVolunteer_Models;
@@ -10,9 +11,11 @@ namespace MyVolunteer_API.Controllers
     public class ProjectSignUpController : ControllerBase
     {
         private readonly IProjectSignUpRepository _projectSignUpRepository;
-        public ProjectSignUpController(IProjectSignUpRepository _projectSignUpRepository)
+        private readonly IEmailSender _emailSender;
+        public ProjectSignUpController(IProjectSignUpRepository _projectSignUpRepository, IEmailSender _emailSender)
         {
             this._projectSignUpRepository = _projectSignUpRepository;
+            this._emailSender = _emailSender;
         }
 
         [HttpGet]
@@ -46,9 +49,19 @@ namespace MyVolunteer_API.Controllers
 
         }
         [HttpPost]
-        public async Task<IActionResult> Add([FromBody] ProjectSignUpDTO projectSignUpDTO)
+        public async Task<IActionResult> Add([FromBody] ProjectSignUpDTO projectSignUp)
         {
-            return Ok(await _projectSignUpRepository.Create(projectSignUpDTO));
+            try
+            {
+                await _projectSignUpRepository.Create(projectSignUp);
+                await _emailSender.SendEmailAsync(projectSignUp.VolunteerEmail, "Volunteer sign up confirmation", $"Hi, {projectSignUp.VolunteerName} <br>Thank you for sign up. We're welcome to start your project named \"{projectSignUp.ProjectName}\" which starts {projectSignUp.ProjectStartDate?.ToString("d")} and take place in {projectSignUp.ProjectPlace}. <br>Hope to see you soon :)");
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return Ok();
         }
 
     }

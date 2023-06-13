@@ -9,6 +9,7 @@ using MyVolunteer_Server.Data;
 using MyVolunteer_Server.Service.IService;
 using MyVolunteer_Server.Service;
 using Syncfusion.Blazor;
+using AutoMapper;
 
 Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("MTg3OTgyMUAzMjMxMmUzMTJlMzMzNW5adUtHYmdnQVVIb2JvU2VZakE0cmdCZk16cGdSTVkvR1g2UFliL1VqRzA9");
 

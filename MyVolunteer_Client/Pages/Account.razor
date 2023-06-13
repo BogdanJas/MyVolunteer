@@ -34,6 +34,19 @@ else{
                     <ValidationMessage For="() => Volunteer.Name"></ValidationMessage>
                 </div>
                 <div class="form-group pt-2">
+                    <label class="fw-bolder">Date of birth</label>
+                    <InputDate @bind-Value="Volunteer.DateOfBirth"></InputDate>
+                    <ValidationMessage For="() => Volunteer.DateOfBirth"></ValidationMessage>
+                </div>
+                <div class="form-group pt-2">
+                    <label class="fw-bolder">Sex</label>
+                    <InputRadioGroup @bind-Value="Volunteer.Sex">
+                        <InputRadio Value="false" /> Male
+                        <InputRadio Value="true" /> Female
+                    </InputRadioGroup>
+                    <ValidationMessage For="() => Volunteer.Sex"></ValidationMessage>
+                </div>
+                <div class="form-group pt-2">
                     <label class="fw-bolder">Phone</label>
                     <InputText @bind-Value="Volunteer.PhoneNumber"></InputText>
                     <ValidationMessage For="() => Volunteer.PhoneNumber"></ValidationMessage>
@@ -73,11 +86,6 @@ else{
                     <InputText @bind-Value="Volunteer.ConfirmPassword"></InputText>
                     <ValidationMessage For="() => Volunteer.ConfirmPassword"></ValidationMessage>
                 </div>
-        
-                <div class="form-group pt-4 col-6">
-                   <label class="fw-bolder">Insert resume</label>
-                   <InputFile OnChange="HandleResumeUpload"></InputFile>
-                </div>
 
                 <div class="form-group pt-2">
                     <button type="submit" class="btn btn-success form-control">Save changes</button>
@@ -107,35 +115,7 @@ else{
         if (int.Parse(volunteerId) != null || int.Parse(volunteerId) != 0)
         {
             Volunteer = await _volunteerService.Update(Volunteer);
-        }
-    }
-
-    private async Task HandleResumeUpload(InputFileChangeEventArgs e)
-    {
-        IsProcessing = true;
-        try
-        {
-            if (e.GetMultipleFiles().Count > 0)
-            {
-                foreach (var file in e.GetMultipleFiles())
-                {
-                    System.IO.FileInfo fileInfo = new System.IO.FileInfo(file.Name);
-                    if (fileInfo.Extension.ToLower() == ".pdf")
-                    {
-                        //Volunteer.ImageUrl = await _fileUpload.UploadFile(file);
-                    }
-                    else
-                    {
-                        await _jsRuntime.ToastrError("Please select .pdf file only");
-                        return;
-                    }
-                }
-            }
-            IsProcessing = false;
-        }
-        catch (Exception ex)
-        {
-            await _jsRuntime.ToastrError(ex.Message);
+            _jsRuntime.ToastrSuccess("Your account was updated");
         }
     }
 }

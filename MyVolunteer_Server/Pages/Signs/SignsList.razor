@@ -4,38 +4,32 @@
 
 <div>
     <h4 class="card-title text-info">SignUp's List</h4>
-    @if (ProjectSignUps.Any())
-    {
+ @if (IsLoading)
+{
+    <div class="text-center">
+        <img src="/images/loading.gif">
+    </div>
+}
+else
+{
+
         <SfGrid @ref="ProjectSignUpGrid" DataSource="@ProjectSignUps" AllowPaging="true" AllowFiltering="true" AllowSorting="true">
             <GridFilterSettings Type="Syncfusion.Blazor.Grids.FilterType.Menu"></GridFilterSettings>
-            <GridSortSettings AllowUnsort="false">
-                <GridSortColumns>
-                    <GridSortColumn Field="Salary" Direction="SortDirection.Ascending"></GridSortColumn>
-                </GridSortColumns>
-            </GridSortSettings>
             <GridPageSettings PageSize="5" PageCount="5" PageSizes="true"></GridPageSettings>
             <GridColumns>
                 <GridColumn IsPrimaryKey="true" AllowAdding="false" Field=@nameof(ProjectSignUpDTO.Id) HeaderText="ID" Visible="false"></GridColumn>
-@*                <GridColumn Field=@nameof(ProjectSignUpDTO.Volunteer.Name) HeaderText="Name" Format="t"></GridColumn>
-                <GridColumn Field=@nameof(ProjectSignUpDTO.Volunteer.Email) HeaderText="Email" Format="t"></GridColumn>
-                <GridColumn Field=@nameof(ProjectSignUpDTO.Volunteer.PhoneNumber) HeaderText="Phone number" Format="t"></GridColumn>*@
-                <GridColumn Field=@nameof(ProjectSignUpDTO.SignDate) HeaderText="Sign Date" Format="d" Type="ColumnType.Date" TextAlign="TextAlign.Right" Width="130"></GridColumn>
-                <GridColumn HeaderText="Manage Records" Width="150">
-                    
-                </GridColumn>
+                <GridColumn Field=@nameof(ProjectSignUpDTO.ProjectName) HeaderText="Project name"></GridColumn>
+                <GridColumn Field=@nameof(ProjectSignUpDTO.ProjectStartDate) HeaderText="Project start date" Format="d" Type="ColumnType.Date"></GridColumn>
+                <GridColumn Field=@nameof(ProjectSignUpDTO.ProjectEndDate) HeaderText="Project end date" Format="d" Type="ColumnType.Date"></GridColumn>
+                <GridColumn Field=@nameof(ProjectSignUpDTO.VolunteerName) HeaderText="Volunteer name"></GridColumn>
+                <GridColumn Field=@nameof(ProjectSignUpDTO.VolunteerDateOfBirth) HeaderText="Date of Birth" Format="d" Type="ColumnType.Date" Width="130"></GridColumn>
+                <GridColumn Field=@nameof(Male) HeaderText="Gender"></GridColumn>
+                <GridColumn Field=@nameof(ProjectSignUpDTO.VolunteerEmail) HeaderText="Email"></GridColumn>
+                <GridColumn Field=@nameof(ProjectSignUpDTO.VolunteerPhoneNumber) HeaderText="Phone number"></GridColumn>
+                <GridColumn Field=@nameof(ProjectSignUpDTO.SignDate) HeaderText="Sign Date" Format="d" Type="ColumnType.Date" Width="130"></GridColumn>
             </GridColumns>
         </SfGrid>
-    }
-     else
-        {
-            if (IsLoading)
-            {
-                //loading gif
-                <div class="text-center">
-                <img src="/images/loading.gif">
-                    </div>
-            }
-        }
+}
 </div>
 
 
@@ -43,30 +37,18 @@
 
     public SfGrid<ProjectSignUpDTO> ProjectSignUpGrid;
     private IEnumerable<ProjectSignUpDTO> ProjectSignUps { get; set; } = new List<ProjectSignUpDTO>();
-    private bool IsLoading { get; set; } = false;
+    private bool IsLoading { get; set; } = true;
+    public string Male = "Male";
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-
-            await LoadSignUps();
-
+            IsLoading = true;
+            StateHasChanged();
+            ProjectSignUps = await _projectSignUpRepository.GetAll();
+            IsLoading = false;
+            StateHasChanged();
         }
-    }
-
-
-    private async Task LoadSignUps()
-    {
-        IsLoading = true;
-        StateHasChanged();
-        ProjectSignUps = await _projectSignUpRepository.GetAll();
-        IsLoading = false;
-        StateHasChanged();
-    }
-
-     private void OrderDetails(int id)
-    {
-        _navigationManager.NavigateTo("/signUp/details/" + id);
     }
 }

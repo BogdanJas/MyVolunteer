@@ -30,13 +30,13 @@ namespace MyVolunteer_Business.Repository
             try
             {
                 var obj = _mapper.Map<ProjectSignUpDTO, ProjectSignUp>(body);
-                _db.ProjectSignUps.Add(obj);
-                var project = await _projectDateRepository.Get(body.ProjectDateId);
+                var addedobj = _db.ProjectSignUps.Add(obj);
+                var project = await _projectDateRepository.Get(body.ProjectId);
                 project.VolunteersLimit--;
                 await _projectDateRepository.Update(project);
                 await _db.SaveChangesAsync();
 
-                return _mapper.Map<ProjectSignUp, ProjectSignUpDTO>(obj);
+                return _mapper.Map<ProjectSignUp, ProjectSignUpDTO>(addedobj.Entity);
             }
             catch (Exception ex)
             {

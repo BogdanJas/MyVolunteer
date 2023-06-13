@@ -24,6 +24,10 @@
                         }
 
                         <div class="py-2">
+                            <InputText @bind-Value="SignUpRequest.Name" type="text" class="form-control" placeholder="Name..." />
+                            <ValidationMessage For="(()=>SignUpRequest.Name)" />
+                        </div>
+                        <div class="py-2">
                             <InputText @bind-Value="SignUpRequest.Email" type="text" class="form-control" placeholder="Email..." />
                             <ValidationMessage For="(()=>SignUpRequest.Email)" />
                         </div>
@@ -69,6 +73,7 @@
         var result = await _authService.RegisterUser(SignUpRequest);
         if (result.IsRegisterationSuccessful)
         {
+            Volunteer.Name = SignUpRequest.Name;
             Volunteer.Email = SignUpRequest.Email;
             Volunteer.PhoneNumber = SignUpRequest.PhoneNumber;
             Volunteer.Password = SignUpRequest.Password;

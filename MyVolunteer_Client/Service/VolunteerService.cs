@@ -46,7 +46,6 @@ namespace MyVolunteer_Client.Service
             if (response.IsSuccessStatusCode)
             {
                 var volunteer = JsonConvert.DeserializeObject<VolunteerDTO>(content);
-                //volunteer.ImageUrl = BaseServerUrl + volunteer.ImageUrl;
                 return volunteer;
             }
             else
